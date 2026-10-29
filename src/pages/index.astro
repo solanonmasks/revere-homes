@@ -1,0 +1,488 @@
+---
+// The page markup. Text, phone numbers and photos come from src/data/site.js.
+import '../styles/global.css';
+import { site, nav, hero, regions, specialties, services, posts, chips } from '../data/site.js';
+
+const canonical = new URL('/', site.url).href;
+const year = 2026;
+
+// Structured data so Google understands this is a local home builder
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.name,
+  url: site.url,
+  logo: site.logo,
+  image: site.ogImage,
+  telephone: '+1-' + site.phone,
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    addressCountry: site.address.country,
+  },
+  areaServed: regions.map((name) => ({ '@type': 'Place', name })),
+  description: site.description,
+};
+---
+<!doctype html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{site.title}</title>
+  <meta name="description" content={site.description} />
+  <link rel="canonical" href={canonical} />
+  <meta name="theme-color" content="#1B2433" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:title" content={site.title} />
+  <meta property="og:description" content={site.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={site.ogImage} />
+  <meta property="og:locale" content="en_CA" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={site.title} />
+  <meta name="twitter:description" content={site.description} />
+  <meta name="twitter:image" content={site.ogImage} />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <!-- Marks the page as JS-enabled so animations only run when JS can finish them -->
+  <script is:inline>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ============ Header ============ -->
+<header id="top" class="header">
+  <div class="header-in">
+    <a href="#top" class="brand">
+      <img src={site.logo} alt="" width="48" height="48" />
+      <span>{site.name}</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+    <div class="header-actions">
+      <a href="#contact" class="btn btn-navy header-cta">Free 1-hour consultation</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="mobile-menu">
+        <span class="menu-icon" aria-hidden="true"></span>
+        <span class="sr-only">Menu</span>
+      </button>
+    </div>
+  </div>
+  <nav id="mobile-menu" class="mobile-menu" aria-label="Mobile" hidden>
+    {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    <a href="#contact">Free 1-hour consultation</a>
+  </nav>
+</header>
+
+<main>
+<!-- ============ Hero ============ -->
+<section class="hero wrap">
+  <div class="hero-grid">
+    <h1 data-hero class="hero-h1">Make space for what matters.</h1>
+    <div data-hero class="hero-side" style="--delay:.25s">
+      <p class="lead">Custom homes, coach houses and renovations across the Fraser Valley, Metro Vancouver, the Sea-to-Sky and the Sunshine Coast. We take on fewer projects, so yours gets our full attention.</p>
+      <div class="btn-row">
+        <a href="#contact" class="btn btn-terra btn-lg">Book a free consultation</a>
+        <a href={site.phoneHref} class="btn btn-outline btn-lg">{site.phone}</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-frame">
+    <img src={hero.img} alt={hero.alt} fetchpriority="high" />
+  </div>
+</section>
+
+<!-- ============ Approach ============ -->
+<section id="approach" class="approach wrap section two-col">
+  <h2 data-reveal class="h2">Less a transaction. More a partnership.</h2>
+  <div class="approach-copy">
+    <p data-reveal>Building a home is more than construction. It’s connection, communication and understanding. From the very start, we make sure you feel heard, informed and supported.</p>
+    <p data-reveal>You’re not just a client, you’re a collaborator. We manage the complexities of the build; you focus on the exciting part: bringing your vision to life.</p>
+    <div data-reveal class="regions">
+      {regions.map((r) => <span>{r}</span>)}
+    </div>
+  </div>
+</section>
+
+<!-- ============ Specialties ============ -->
+<section id="specialties" class="specialties">
+  <div class="wrap section spec-grid">
+    <div class="spec-list">
+      <h2 data-reveal class="h2">Our specialties.</h2>
+      {specialties.map((s, i) => (
+        <button type="button" class="spec-btn" data-spec={i} aria-pressed={i === 0 ? 'true' : 'false'} aria-controls={`spec-panel-${i}`}>
+          {s.t}<span class="spec-dot" aria-hidden="true"></span>
+        </button>
+      ))}
+    </div>
+    <div>
+      {specialties.map((s, i) => (
+        <div id={`spec-panel-${i}`} class="spec-panel" data-panel={i} hidden={i !== 0}>
+          <div class="spec-img"><img src={s.img} alt={`${s.t} photo`} loading="lazy" /></div>
+          <h3 class="spec-h3">{s.t}</h3>
+          <p class="spec-p">{s.d}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ============ Services ============ -->
+<section id="services" class="wrap section">
+  <h2 data-reveal class="h2 services-h2">Making the world a more beautiful place.</h2>
+  <div class="services-grid">
+    {services.map((s) => (
+      <article data-reveal class="service">
+        <div class="service-img zoom"><img src={s.img} alt={s.t} loading="lazy" /></div>
+        <div class="card-head">
+          <h3 class="service-h3">{s.t}</h3>
+          <span class="tag">{s.k}</span>
+        </div>
+        <p class="service-p">{s.d}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<!-- ============ Journal ============ -->
+<section id="journal" class="journal">
+  <div class="wrap section">
+    <div class="journal-head">
+      <h2 data-reveal class="h2">From the journal.</h2>
+      <p data-reveal class="journal-intro">Straight answers on BC’s housing rules, ALR land and whether to rebuild or renovate.</p>
+    </div>
+    <div class="posts">
+      {posts.map((p) => (
+        <a data-reveal href={p.href} target="_blank" rel="noopener" class="post zoom">
+          <div class="post-img"><img src={p.img} alt="" loading="lazy" /></div>
+          <span class="tag">{p.d}</span>
+          <h3 class="post-h3">{p.t}</h3>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ============ Contact ============ -->
+<section id="contact" class="wrap section two-col contact">
+  <div class="contact-info">
+    <h2 data-reveal class="h2-lg">Let’s talk about your home.</h2>
+    <p data-reveal class="contact-intro">Your first hour with us is free. Bring your lot, your floor plan or just an idea.</p>
+    <a data-reveal href={site.phoneHref} class="big-phone">{site.phone}</a>
+    <a data-reveal href={`mailto:${site.email}`} class="contact-email">{site.email}</a>
+    <p data-reveal class="contact-addr">{site.address.street}, {site.address.city}, {site.address.region}</p>
+  </div>
+  <div>
+    <form data-reveal class="form" id="contact-form" data-endpoint={site.formEndpoint}>
+      <div class="form-row">
+        <label>Name<input name="name" autocomplete="name" required /></label>
+        <label>Phone<input name="phone" type="tel" autocomplete="tel" /></label>
+      </div>
+      <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+      <fieldset class="chips">
+        <legend>I’m thinking about</legend>
+        <div class="chip-row">
+          {chips.map((c) => <button type="button" class="chip" aria-pressed="false" data-chip={c}>{c}</button>)}
+        </div>
+        <input type="hidden" name="interests" value="" />
+      </fieldset>
+      <label>Let’s get started<textarea name="message" rows="4"></textarea></label>
+      <input type="hidden" name="_subject" value="New consultation request from reverehomes.ca" />
+      <p class="form-error" role="alert" hidden>Sorry, something went wrong sending your message. Please call us at {site.phone} or email {site.email}.</p>
+      <button type="submit" class="btn btn-terra btn-lg submit">Book my consultation</button>
+    </form>
+    <div class="thanks" role="status" hidden>Thank you. We’ll reach out to book your free hour.</div>
+  </div>
+</section>
+</main>
+
+<!-- ============ Footer ============ -->
+<footer class="footer">
+  <div class="footer-in">
+    <span class="footer-name">{site.name}</span>
+    <span>{site.address.street}, {site.address.city} · <a href={site.phoneHref}>{site.phone}</a></span>
+    <div class="footer-meta">
+      <span>© {year} {site.legalName}</span>
+      <a href="https://backpackdigitalmedia.com" target="_blank" rel="noopener" class="credit">Website by Backpack Digital Media</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Sticky bottom bar on phones / tablets -->
+<div class="mobile-bar">
+  <a href={site.phoneHref} class="mb-call">Call</a>
+  <a href="#contact" class="mb-cta">Free consult</a>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ----- Mobile menu -----
+  const menuBtn = document.querySelector('.menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (menuBtn && menu) {
+    const setOpen = (open) => {
+      menuBtn.setAttribute('aria-expanded', String(open));
+      menu.hidden = !open;
+    };
+    menuBtn.addEventListener('click', () => setOpen(menu.hidden));
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+  }
+
+  // ----- Scroll reveal -----
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      let i = 0;
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        el.style.transitionDelay = Math.min(i++, 5) * 0.08 + 's';
+        el.classList.remove('is-hidden');
+        io.unobserve(el);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach((el) => {
+      if (el.getBoundingClientRect().top < window.innerHeight) return;
+      el.classList.add('is-hidden');
+      io.observe(el);
+    });
+    // Safety net: show everything after 4 seconds no matter what
+    setTimeout(() => document.querySelectorAll('[data-reveal].is-hidden').forEach((el) => el.classList.remove('is-hidden')), 4000);
+  }
+
+  // ----- Specialties switcher -----
+  const specBtns = document.querySelectorAll<HTMLButtonElement>('.spec-btn');
+  const panels = document.querySelectorAll<HTMLElement>('.spec-panel');
+  specBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.spec;
+      specBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      panels.forEach((p) => { p.hidden = p.dataset.panel !== n; });
+    });
+  });
+
+  // ----- Form chips -----
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const hiddenInterests = form.querySelector<HTMLInputElement>('input[name="interests"]')!;
+    const chipBtns = form.querySelectorAll<HTMLButtonElement>('.chip');
+    chipBtns.forEach((c) => {
+      c.addEventListener('click', () => {
+        c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+        hiddenInterests.value = [...chipBtns]
+          .filter((b) => b.getAttribute('aria-pressed') === 'true')
+          .map((b) => b.dataset.chip)
+          .join(', ');
+      });
+    });
+
+    // ----- Form submit -----
+    const thanks = document.querySelector<HTMLElement>('.thanks')!;
+    const errorMsg = form.querySelector<HTMLElement>('.form-error')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('.submit')!;
+    const endpoint = form.dataset.endpoint || '';
+    const showThanks = () => { form.hidden = true; thanks.hidden = false; };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      errorMsg.hidden = true;
+      if (!endpoint) {
+        console.warn('No formEndpoint set in src/data/site.js, so this form was not sent anywhere.');
+        showThanks();
+        return;
+      }
+      submitBtn.disabled = true;
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error('Bad response ' + res.status);
+        showThanks();
+      } catch (err) {
+        errorMsg.hidden = false;
+        submitBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  /* ---------- Layout helpers ---------- */
+  .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter); }
+  .section { padding-top: var(--section-y); padding-bottom: var(--section-y); }
+  .two-col { display: grid; grid-template-columns: 1fr; }
+
+  .h2 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 4.8vw, 80px); line-height: 1; letter-spacing: -.025em; }
+  .h2-lg { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(46px, 5.6vw, 96px); line-height: .95; letter-spacing: -.025em; }
+  .lead { margin: 0; font-size: clamp(19px, 1.4vw, 21px); color: var(--text); }
+  .tag { font-weight: 600; font-size: 15px; color: var(--terracotta); }
+
+  /* ---------- Buttons (square corners) ---------- */
+  .btn { display: inline-block; text-decoration: none; font-weight: 700; font-size: 17px; padding: 14px 22px; white-space: nowrap; border: none; cursor: pointer; font-family: var(--sans); transition: background .25s, color .25s; }
+  .btn-lg { font-size: 18px; padding: 18px 28px; }
+  .btn-navy { background: var(--navy); color: var(--paper); }
+  .btn-navy:hover { background: var(--terracotta); color: var(--paper); }
+  .btn-terra { background: var(--terracotta); color: var(--white); }
+  .btn-terra:hover { background: var(--navy); color: var(--white); }
+  .btn-outline { border: 2px solid var(--navy); color: var(--navy); padding: 16px 26px; }
+  .btn-outline:hover { background: var(--navy); color: var(--paper); }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  /* ---------- Header ---------- */
+  .header { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--rule); }
+  .header-in { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; flex: none; }
+  .brand img { height: 48px; width: 48px; object-fit: contain; display: block; }
+  .brand span { font-family: var(--serif); font-size: 26px; color: var(--navy); }
+  .nav { display: none; gap: 32px; font-weight: 600; font-size: 17px; }
+  .nav a { color: var(--navy); text-decoration: none; }
+  .nav a:hover { color: var(--terracotta); }
+  .header-actions { display: flex; align-items: center; gap: 12px; }
+  .header-cta { display: none; }
+
+  .menu-btn { width: 48px; height: 48px; display: grid; place-items: center; background: var(--navy); border: none; cursor: pointer; padding: 0; }
+  .menu-icon, .menu-icon::before, .menu-icon::after { display: block; width: 22px; height: 2px; background: var(--paper); position: relative; transition: transform .25s, background .25s; }
+  .menu-icon::before, .menu-icon::after { content: ''; position: absolute; left: 0; }
+  .menu-icon::before { top: -7px; }
+  .menu-icon::after { top: 7px; }
+  .menu-btn[aria-expanded='true'] .menu-icon { background: transparent; }
+  .menu-btn[aria-expanded='true'] .menu-icon::before { transform: translateY(7px) rotate(45deg); }
+  .menu-btn[aria-expanded='true'] .menu-icon::after { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu { border-top: 1px solid var(--rule); background: var(--paper); padding: 8px var(--gutter) 20px; display: flex; flex-direction: column; }
+  .mobile-menu[hidden] { display: none; }
+  .mobile-menu a { padding: 14px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-weight: 600; font-size: 19px; color: var(--navy); }
+  .mobile-menu a:last-child { color: var(--terracotta); border-bottom: none; }
+
+  /* ---------- Hero ---------- */
+  .hero { padding-top: clamp(48px, 6vw, 96px); }
+  .hero-grid { display: grid; grid-template-columns: 1fr; gap: 28px 72px; align-items: end; margin-bottom: clamp(32px, 4vw, 56px); }
+  .hero-h1 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(56px, 8vw, 140px); line-height: .92; letter-spacing: -.03em; }
+  .hero-side { display: flex; flex-direction: column; gap: 22px; }
+  .hero-frame { aspect-ratio: 4 / 3; background: var(--paper-3); overflow: hidden; }
+  .js .hero-frame { animation: rvOpen 1.6s cubic-bezier(.65, 0, .35, 1) .35s both; }
+  .hero-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------- Approach ---------- */
+  .approach { gap: 40px 96px; align-items: start; }
+  .approach-copy { display: flex; flex-direction: column; gap: 22px; font-size: clamp(19px, 1.4vw, 21px); color: var(--text); }
+  .approach-copy p { margin: 0; }
+  .regions { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 18px; border-top: 2px solid var(--navy); padding-top: 20px; color: var(--navy); }
+  .regions span { font-family: var(--serif); font-size: 22px; line-height: 1.2; }
+
+  /* ---------- Specialties ---------- */
+  .specialties { background: var(--navy); color: var(--paper); }
+  .spec-grid { display: grid; grid-template-columns: 1fr; gap: 48px 88px; align-items: start; }
+  .spec-list { display: flex; flex-direction: column; gap: 6px; }
+  .spec-list .h2 { margin-bottom: 24px; }
+  .spec-btn { text-align: left; background: transparent; border: none; border-top: 1px solid #3A4558; padding: 16px 0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--muted-on-navy); font-family: var(--sans); font-weight: 600; font-size: clamp(19px, 1.5vw, 22px); transition: color .3s; }
+  .spec-btn:hover, .spec-btn[aria-pressed='true'] { color: var(--paper); }
+  .spec-dot { width: 10px; height: 10px; background: transparent; display: block; flex: none; transition: background .3s; }
+  .spec-btn[aria-pressed='true'] .spec-dot { background: var(--dot); }
+  .spec-panel { display: flex; flex-direction: column; gap: 24px; animation: rvFade .6s ease both; }
+  .spec-panel[hidden] { display: none; }
+  .spec-img { aspect-ratio: 4 / 3; background: #2A3446; overflow: hidden; }
+  .spec-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .spec-h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(30px, 3vw, 46px); line-height: 1.05; }
+  .spec-p { margin: 0; font-size: clamp(19px, 1.4vw, 21px); color: var(--text-on-navy); max-width: 34em; }
+
+  /* ---------- Services ---------- */
+  .services-h2 { margin-bottom: clamp(36px, 4vw, 56px); }
+  .services-grid { display: grid; grid-template-columns: 1fr; gap: clamp(24px, 3vw, 48px); }
+  .service { display: flex; flex-direction: column; gap: 18px; }
+  .service-img { aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-3); }
+  .service-img img, .post-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 2px solid var(--navy); padding-top: 16px; }
+  .service-h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 2.6vw, 40px); }
+  .service-p { margin: 0; font-size: 19px; color: var(--text); max-width: 34em; }
+
+  /* ---------- Journal ---------- */
+  .journal { background: var(--paper-2); }
+  .journal-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 20px; margin-bottom: clamp(32px, 4vw, 52px); }
+  .journal-intro { margin: 0; font-size: 18px; color: var(--text); max-width: 26em; }
+  .posts { display: grid; grid-template-columns: 1fr; gap: clamp(20px, 2.4vw, 36px); }
+  .post { text-decoration: none; color: var(--navy); display: flex; flex-direction: column; gap: 14px; }
+  .post-img { aspect-ratio: 3 / 2; overflow: hidden; background: var(--rule); }
+  .post-h3 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: clamp(22px, 1.8vw, 28px); line-height: 1.2; }
+
+  /* ---------- Contact ---------- */
+  .contact { gap: 48px 88px; align-items: start; }
+  .contact-info { display: flex; flex-direction: column; gap: 22px; }
+  .contact-intro { margin: 0; font-size: 19px; color: var(--text); max-width: 28em; }
+  .big-phone { color: var(--navy); text-decoration: none; font-family: var(--serif); font-size: clamp(40px, 4.4vw, 68px); line-height: 1; }
+  .contact-email { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; }
+  .contact-addr { margin: 0; font-size: 17px; color: var(--text); border-top: 1px solid var(--rule); padding-top: 18px; }
+
+  .form { background: var(--white); border-top: 6px solid var(--navy); padding: clamp(26px, 3vw, 44px); display: flex; flex-direction: column; gap: 18px; }
+  .form[hidden] { display: none; }
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 16px; }
+  .form label { display: flex; flex-direction: column; gap: 7px; font-weight: 600; font-size: 16px; }
+  .form input:not([type='hidden']), .form textarea { border: 1.5px solid var(--input-border); padding: 14px; font-size: 18px; border-radius: 0; background: var(--white); color: var(--navy); width: 100%; }
+  .form textarea { resize: vertical; }
+  .form input:focus, .form textarea:focus { outline: 2px solid var(--terracotta); outline-offset: 1px; }
+  .chips { border: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .chips legend { font-weight: 600; font-size: 16px; padding: 0; margin-bottom: 8px; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1.5px solid var(--navy); background: transparent; color: var(--navy); font-family: var(--sans); font-weight: 600; font-size: 16px; padding: 10px 16px; cursor: pointer; }
+  .chip[aria-pressed='true'] { background: var(--navy); color: var(--paper); }
+  .submit { align-self: flex-start; padding: 18px 30px; }
+  .submit:disabled { opacity: .6; cursor: wait; }
+  .form-error { margin: 0; color: #9B2C1F; font-size: 16px; font-weight: 600; }
+  .thanks { background: var(--white); border-top: 6px solid var(--terracotta); padding: clamp(28px, 3vw, 48px); font-family: var(--serif); font-size: clamp(28px, 2.6vw, 40px); line-height: 1.15; }
+  .thanks[hidden] { display: none; }
+
+  /* ---------- Footer ---------- */
+  .footer { background: var(--navy); color: var(--footer-text); }
+  .footer-in { max-width: var(--max); margin: 0 auto; padding: 40px var(--gutter) 100px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 18px 40px; font-size: 15px; }
+  .footer a { color: var(--paper); }
+  .footer-name { font-family: var(--serif); font-size: 24px; color: var(--paper); }
+  .footer-meta { display: flex; flex-direction: column; gap: 4px; }
+  .footer .credit { color: var(--footer-text); }
+  .footer .credit:hover { color: var(--paper); }
+
+  /* ---------- Sticky mobile bar ---------- */
+  .mobile-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: grid; grid-template-columns: 1fr 1fr; }
+  .mobile-bar a { text-decoration: none; font-weight: 700; font-size: 17px; padding: 18px; text-align: center; }
+  .mb-call { background: var(--paper); color: var(--navy); border-top: 1px solid var(--rule); }
+  .mb-cta { background: var(--terracotta); color: var(--white); }
+  .mb-cta:hover { color: var(--white); }
+
+  /* ---------- 700px and up ---------- */
+  @media (min-width: 700px) {
+    .header-cta { display: inline-block; }
+    .posts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* ---------- 1000px and up (desktop) ---------- */
+  @media (min-width: 1000px) {
+    .nav { display: flex; }
+    .header-cta { display: inline-block; }
+    .menu-btn, .mobile-menu, .mobile-menu[hidden] { display: none; }
+    .hero-grid { grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); }
+    .hero-frame { aspect-ratio: 21 / 9; }
+    .two-col, .services-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .spec-grid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
+    .spec-list { position: sticky; top: 120px; }
+    .posts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .footer-in { padding-bottom: 40px; }
+    .mobile-bar { display: none; }
+  }
+
+  /* Small phones: let the header CTA wrap rather than overflow */
+  @media (max-width: 420px) {
+    .brand span { font-size: 22px; }
+    .btn-lg { white-space: normal; }
+  }
+</style>
+</body>
+</html>

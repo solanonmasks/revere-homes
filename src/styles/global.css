@@ -1,0 +1,66 @@
+/* ------------------------------------------------------------
+   Revere Homes — global styles
+   Colours and fonts are set once here as variables, so you can
+   change a colour everywhere by editing one line.
+   ------------------------------------------------------------ */
+
+:root {
+  --navy: #1B2433;
+  --paper: #F5F1EA;
+  --paper-2: #ECE6DB;
+  --paper-3: #E4DDD0;
+  --rule: #DCD5C8;
+  --terracotta: #A0643C;
+  --dot: #D39A6A;
+  --text: #3E4756;
+  --text-on-navy: #CDD3DC;
+  --muted-on-navy: #8E98A8;
+  --footer-text: #B7BECA;
+  --input-border: #C9C1B2;
+  --white: #FFFFFF;
+
+  --serif: 'Gloock', serif;
+  --sans: 'Hanken Grotesk', sans-serif;
+
+  --max: 1440px;
+  --gutter: clamp(18px, 4vw, 48px);
+  --section-y: clamp(88px, 10vw, 150px);
+  --ease: cubic-bezier(.16, .84, .3, 1);
+}
+
+html, body { margin: 0; padding: 0; background: var(--paper); color: var(--navy); }
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); font-size: 18px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+a { color: var(--navy); }
+a:hover { color: var(--terracotta); }
+input, textarea, button { font: inherit; }
+img { max-width: 100%; }
+[id] { scroll-margin-top: 96px; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Animations ---------- */
+@keyframes rvRise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes rvOpen { from { clip-path: inset(0 50% 0 50%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes rvFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Hero text rises in (class added by JS, so no-JS visitors still see everything) */
+.js [data-hero] { animation: rvRise 1.1s var(--ease) var(--delay, .1s) both; }
+
+/* Scroll reveal: JS adds .is-hidden to items below the fold, then removes it */
+[data-reveal] { transition: opacity 1s var(--ease), transform 1s var(--ease); }
+[data-reveal].is-hidden { opacity: 0; transform: translateY(28px); }
+
+/* Image hover zoom */
+.zoom img { transition: transform 1.1s var(--ease); }
+.zoom:hover img { transform: scale(1.045); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  [data-reveal].is-hidden { opacity: 1; transform: none; }
+}
